@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="vn">
+<head>
+    <meta charset="UTF-8">
+    <title>Máy Tính Kế Hoạch Hưu Trí</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Add custom styles here if you don't have an external CSS file */
+        .button-group button {
+            margin-bottom: 10px; /* Adds space below each button */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Máy Tính Kế Hoạch Hưu Trí</h1>
+        <form id="calculator-form">
+            <div class="form-group">
+                <label for="monthly-expenditures">Chi Tiêu Hàng Tháng (VND):</label>
+                <input type="text" id="monthly-expenditures" required placeholder="Nhập số tiền...">
+            </div>
+            <div class="form-group">
+                <label for="monthly-income">Thu Nhập Hàng Tháng (VND):</label>
+                <input type="text" id="monthly-income" required placeholder="Nhập số tiền...">
+            </div>
+            <div class="form-group">
+                <label for="savings-rate">Tỷ lệ tiền bỏ vào tài khoản đầu tư (%):</label>
+                <input type="number" id="savings-rate" required placeholder="Nhập tỷ lệ...">
+            </div>
+            <div class="form-group">
+                <label for="initial-balance">Số dư ban đầu (VND):</label>
+                <input type="text" id="initial-balance" required placeholder="Nhập số tiền...">
+            </div>
+            <div class="form-group">
+                <label for="new-monthly-income">Thu Nhập Mới Hàng Tháng (VND):</label>
+                <input type="text" id="new-monthly-income" placeholder="Nhập số tiền...">
+            </div>
+            <div class="form-group">
+                <label for="income-increase-year">Năm Tăng Thu Nhập:</label>
+                <input type="number" id="income-increase-year" placeholder="Nhập năm...">
+            </div>            
+            <div class="button-group">
+                <button type="button" id="toggle-one-off">Thêm vào giao dịch không thường xuyên</button>
+            <div>
+
+            <div id="one-off-fields" style="display: none;">
+                <div class="form-group">
+                    <label for="one-off-amount">Số tiền của giao dịch không thường xuyên (VND): mua nhà, mua xe,.. </label>
+                    <input type="text" id="one-off-amount" placeholder="Nhập số tiền...">
+                </div>
+                <div class="form-group">
+                    <label for="one-off-month">Tháng xảy ra giao dịch không thường xuyên:</label>
+                    <input type="number" id="one-off-month" placeholder="Nhập tháng...">
+                </div>
+            </div>
+            <button type="button" id="calculate">Tính Toán Mục Tiêu Hưu Trí</button>
+        </div>
+            </div>
+        </form>
+        <div id="result"></div>
+        <div class="chart-container">
+            <canvas id="savingsChart"></canvas>
+        </div>
+        <div id="explanations">
+            <p><strong>Những giả định của phép tính:</strong></p>
+            <ul>
+                <li>Tỷ lệ tăng trưởng hàng năm cho tài khoản tiết kiệm là 7.2%</li>
+                <li>Tỷ lệ tăng trưởng hàng năm cho tài khoản đầu tư là 14.3%</li>
+                <li>Lạm phát hàng năm dự kiến là 6.2%.</li>
+                <li>Số dư ban đầu và tiết kiệm hàng tháng sẽ đóng góp vào mục tiêu hưu trí, được tính toán dựa trên lãi suất kép.</li>
+            </ul>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
