@@ -1,67 +1,63 @@
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('toggle-one-off').addEventListener('click', function() {
-        var oneOffFields = document.getElementById('one-off-fields');
-        if (oneOffFields.style.display === 'none') {
-            oneOffFields.style.display = 'block';
+    const incomeIncreaseTypeElement = document.getElementById('income-increase-type');
+    const fixedIncomeIncreaseFields = document.getElementById('fixed-income-increase-fields');
+    const percentageIncreaseGroup = document.getElementById('percentage-increase-group');
+
+    // Toggle the display of the percentage increase input based on the selected income increase type
+    incomeIncreaseTypeElement.addEventListener('change', function() {
+        if (this.value === 'percentage') {
+            fixedIncomeIncreaseFields.style.display = 'none';
+            percentageIncreaseGroup.style.display = 'block';
         } else {
-            oneOffFields.style.display = 'none';
+            fixedIncomeIncreaseFields.style.display = 'block';
+            percentageIncreaseGroup.style.display = 'none';
         }
     });
 
     document.getElementById('calculate').addEventListener('click', function() {
         const formatToNumber = (str) => str ? Number(str.replace(/,/g, '')) : 0;
-        const formatNumberWithSeparators = (x) => x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-
         let monthlyExpenditures = formatToNumber(document.getElementById('monthly-expenditures').value);
         let monthlyIncome = formatToNumber(document.getElementById('monthly-income').value);
         const savingsRate = parseFloat(document.getElementById('savings-rate').value) / 100;
         const initialBalance = formatToNumber(document.getElementById('initial-balance').value);
         const newMonthlyIncome = formatToNumber(document.getElementById('new-monthly-income').value);
         const incomeIncreaseYear = parseInt(document.getElementById('income-increase-year').value);
-
-        const includeOneOff = document.getElementById('one-off-fields').style.display !== 'none';
-        const oneOffAmount = includeOneOff ? formatToNumber(document.getElementById('one-off-amount').value) : 0;
-        const oneOffMonth = includeOneOff ? parseInt(document.getElementById('one-off-month').value) : 0;
-
         const inflationRate = 0.062;
-        const depositGrowthRate = 0.072;
-        const investmentGrowthRate = 0.143;
-        const retirementGoal = (monthlyExpenditures * 12) / 0.04;
+        const incomeIncreaseType = document.getElementById('income-increase-type').value;
+        const annualPercentageIncrease = parseFloat(document.getElementById('annual-percentage-increase').value) / 100 || 0;
+        let retirementGoal = (monthlyExpenditures * 12) / 0.04;
         let totalSavings = initialBalance;
-        let data = [];
+        let data = [totalSavings];
         let months = 0;
         let retirementReached = false;
 
         while (!retirementReached) {
             months++;
-            if (months > (incomeIncreaseYear * 12)) {
+            let currentYear = Math.floor(months / 12);
+            
+            // Handle income increase based on the selected method
+            if (incomeIncreaseType === 'fixed' && currentYear >= incomeIncreaseYear) {
                 monthlyIncome = newMonthlyIncome;
+            } else if (incomeIncreaseType === 'percentage' && months % 12 === 0) {
+                monthlyIncome *= (1 + annualPercentageIncrease);
             }
             
+            // Adjust monthly expenditures for inflation annually
+            if (months % 12 === 0) {
+                monthlyExpenditures *= (1 + inflationRate);
+                retirementGoal = ((monthlyExpenditures * 12) / 0.04); // Update retirement goal based on new expenditures
+            }
+
             let monthlySavings = monthlyIncome - monthlyExpenditures;
             let investmentSavings = monthlySavings * savingsRate;
             let depositSavings = monthlySavings * (1 - savingsRate);
             
-            let totalInvestment = totalSavings * savingsRate;
-            let totalDeposit = totalSavings * (1 - savingsRate);
-            
-            let monthlyInvestmentReturn = totalInvestment * (investmentGrowthRate / 12);
-            let monthlyDepositReturn = totalDeposit * (depositGrowthRate / 12);
+            let monthlyInvestmentReturn = (totalSavings * savingsRate) * (0.143 / 12);
+            let monthlyDepositReturn = (totalSavings * (1 - savingsRate)) * (0.072 / 12);
             
             totalSavings += investmentSavings + monthlyInvestmentReturn + depositSavings + monthlyDepositReturn;
-
-            // Subtract the one-off transaction in the specified month
-            if (months === oneOffMonth) {
-                totalSavings -= oneOffAmount;
-                if (totalSavings < 0) totalSavings = 0;
-            }
-
-            // Adjust for inflation each year
-            if (months % 12 === 0) {
-                monthlyExpenditures *= (1 + inflationRate);
-            }
-            
             data.push(totalSavings);
+            
             retirementReached = totalSavings >= retirementGoal;
         }
 
@@ -69,29 +65,26 @@ document.addEventListener('DOMContentLoaded', function() {
         const remainingMonths = months % 12;
         document.getElementById('result').innerHTML = `
             <p>Bạn có thể đạt mục tiêu hưu trí sau: ${yearsToRetirement} năm và ${remainingMonths} tháng.</p>
-            <p>Tổng tiết kiệm dự kiến là: ${formatNumberWithSeparators(totalSavings.toFixed(0))} VND.</p>
+            <p>Tổng tiết kiệm dự kiến là: ${totalSavings.toLocaleString('en')} VND.</p>
         `;
 
-        // Update the chart with the new data up to the point retirement is reached
-        updateChart(data.slice(0, months));
+        updateChart(data);
     });
 
     function updateChart(data) {
         const ctx = document.getElementById('savingsChart').getContext('2d');
-        const labels = Array.from({length: data.length}, (_, i) => `Tháng ${i + 1}`);
-        
+        const labels = Array.from({ length: data.length }, (_, i) => `Tháng ${i}`);
         if (window.savingsChart && typeof window.savingsChart.destroy === 'function') {
             window.savingsChart.destroy();
         }
-        
+
         window.savingsChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels,
+                labels: labels,
                 datasets: [{
                     label: 'Tổng số tiền để dành theo tháng',
                     data: data,
-                    fill: false,
                     borderColor: 'rgb(75, 192, 192)',
                     tension: 0.1
                 }]
@@ -103,15 +96,32 @@ document.addEventListener('DOMContentLoaded', function() {
                         title: {
                             display: true,
                             text: 'Tổng số tiền để dành (VND)'
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Tháng'
                         },
-                        autoSkip: true,
-                        maxTicksLimit: 20
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString('en-US', {
+                                    maximumFractionDigits: 0
+                                });
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += context.parsed.y.toLocaleString('en-US', {
+                                        maximumFractionDigits: 0
+                                    }) + ' VND';
+                                }
+                                return label;
+                            }
+                        }
                     }
                 }
             }
