@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateChart(data) {
         const ctx = document.getElementById('savingsChart').getContext('2d');
-        const labels = Array.from({ length: data.length }, (_, i) => `Month ${i}`);
+        const labels = Array.from({ length: data.length }, (_, i) => `Tháng ${i}`);
         if (window.savingsChart && typeof window.savingsChart.destroy === 'function') {
             window.savingsChart.destroy();
         }
@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Total Savings Over Time',
+                    label: 'Tổng số tiền tiết kiệm trong suốt thời kỳ',
                     data: data,
                     borderColor: 'rgb(75, 192, 192)',
                     tension: 0.1
@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         beginAtZero: true,
                         title: {
                             display: true,
-                            text: 'Total Savings (VND)'
+                            text: 'Tổng tiền tiết kiệm (VND)'
                         },
                         ticks: {
                             callback: function(value) {
