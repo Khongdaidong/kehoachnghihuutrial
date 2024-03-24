@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Công cụ lập kế hoạch hưu trí</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="path/to/your/favicon.ico"> <!-- Update your favicon path here -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -28,7 +29,7 @@
             </div>
             <div class="form-group">
                 <label for="income-increase-type">Tăng thu nhập hàng tháng bằng:</label>
-                <select id="income-increase-type" onchange="toggleIncomeIncreaseFields()">
+                <select id="income-increase-type">
                     <option value="fixed">Số tiền cố định từ năm</option>
                     <option value="percentage">Phần trăm hàng năm</option>
                 </select>
@@ -47,6 +48,23 @@
                 <label for="annual-percentage-increase">Tăng trưởng hàng năm (%):</label>
                 <input type="number" id="annual-percentage-increase" placeholder="Nhập tỷ lệ...">
             </div>
+            <!-- Ad-hoc Expense Input -->
+            <div class="form-group">
+                <label for="adhoc-expense">Ad-hoc Expense (VND):</label>
+                <input type="text" id="adhoc-expense" placeholder="Nhập số tiền...">
+            <div class="form-group">
+                <label>Áp dụng chi phí không thường xuyên hàng năm:</label>
+                <div>
+                    <input type="radio" id="adhoc-annual-yes" name="adhoc-annual" value="yes">
+                    <label for="adhoc-annual-yes">Có</label>
+                    <input type="radio" id="adhoc-annual-no" name="adhoc-annual" value="no" checked>
+                    <label for="adhoc-annual-no">Không</label>
+                </div>
+                <div class="form-group">
+                    <label for="adhoc-month">Month for Ad-hoc Expense:</label>
+                    <input type="number" id="adhoc-month" placeholder="Enter month..." min="1" max="12">
+                </div>
+                
             <button type="button" id="calculate">Tính toán mục tiêu hưu trí</button>
         </form>
         <div id="result"></div>
@@ -58,29 +76,15 @@
             <ul>
                 <li>Tỷ lệ tăng trưởng hàng năm cho tài khoản tiết kiệm là 7.2%</li>
                 <li>Tỷ lệ tăng trưởng hàng năm cho tài khoản đầu tư là 14.3%</li>
-                <li>Lạm phát hàng năm dự kiến là 6.2%.</li>
+                <li>Lạm phát hàng năm dự kiến là 6.2%</li>
                 <li>Số dư ban đầu và tiết kiệm hàng tháng sẽ đóng góp vào mục tiêu hưu trí, được tính toán dựa trên lãi suất kép.</li>
             </ul>
         </div>
     </div>
-    <script>
-        // Function to toggle visibility of income increase fields based on selection
-        function toggleIncomeIncreaseFields() {
-            var incomeIncreaseType = document.getElementById('income-increase-type').value;
-            var fixedIncomeIncreaseFields = document.getElementById('fixed-income-increase-fields');
-            var percentageIncreaseGroup = document.getElementById('percentage-increase-group');
-            
-            if (incomeIncreaseType === 'percentage') {
-                fixedIncomeIncreaseFields.style.display = 'none';
-                percentageIncreaseGroup.style.display = 'block';
-            } else {
-                fixedIncomeIncreaseFields.style.display = 'block';
-                percentageIncreaseGroup.style.display = 'none';
-            }
-        }
-        // Initialize the form fields based on default selection
-        document.addEventListener('DOMContentLoaded', toggleIncomeIncreaseFields);
-    </script>
     <script src="script.js"></script>
+    <script>
+        // Ensure to place any additional inline JavaScript here
+        // For example, initializing the form or other elements if needed
+    </script>
 </body>
 </html>

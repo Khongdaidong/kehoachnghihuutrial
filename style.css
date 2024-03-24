@@ -1,12 +1,10 @@
-body, html {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    padding: 0;
-    margin: 0;
-    background-color: #f4f4f7;
-    background-image: url('YOUR_IMAGE_URL_HERE'); /* Add this line */
-    background-size: cover; /* Cover the entire page */
-    background-position: center; /* Center the background image */
+body {
+    background-color: #f2f2f7; /* Apple's typical background gray */
+    color: #1d1d1f; /* Dark text for high contrast */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.4;
 }
+
 
 .container {
     width: 90%;
@@ -80,3 +78,119 @@ button:hover {
     margin-right: 10px; /* Apply this class to any element that needs space on the right */
 }
 
+/* Hide the radio button itself */
+input[type="radio"] {
+    display: none;
+}
+
+/* Styling for the labels when their radio button is not checked */
+input[type="radio"] + label {
+    color: #666;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+/* Use the :checked pseudo-class to style the label when its radio button is checked */
+input[type="radio"]:checked + label {
+    color: #fff;
+    background-color: #4CAF50;
+}
+input[type="text"], input[type="number"], select {
+    border: 1px solid #d1d1d6; /* Subtle border color */
+    border-radius: 10px; /* Rounded corners */
+    padding: 10px;
+    margin: 0 0 20px 0; /* Generous spacing */
+    width: 100%; /* Full width */
+    box-sizing: border-box; /* Include padding in width */
+}
+button {
+    background-color: #007aff; /* Blue accent color */
+    border: none;
+    border-radius: 20px; /* Fully rounded ends */
+    color: white;
+    padding: 10px 20px;
+    text-transform: uppercase; /* Capitalized text */
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+button:hover {
+    background-color: #005ecb; /* A darker blue on hover */
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.toggle-switch input { display: none; }
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #007aff;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+h1 {
+    font-size: 32px;
+    text-align: center;
+    color: #1d1d1f;
+    margin-bottom: 40px; /* Add more space below the heading */
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+.form-group {
+    margin-bottom: 30px;
+}
+
+.container {
+    padding: 20px;
+    max-width: 600px; /* Don't stretch the form too wide */
+    margin: auto; /* Center the container */
+    background-color: #ffffff; /* White background for the content */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); /* Subtle shadow for depth */
+    border-radius: 12px; /* Rounded corners for the container */
+    margin-top: 50px;
+}
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+}

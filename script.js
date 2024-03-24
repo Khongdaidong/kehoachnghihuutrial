@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const fixedIncomeIncreaseFields = document.getElementById('fixed-income-increase-fields');
     const percentageIncreaseGroup = document.getElementById('percentage-increase-group');
 
-    // Toggle the display of the percentage increase input based on the selected income increase type
     incomeIncreaseTypeElement.addEventListener('change', function() {
         if (this.value === 'percentage') {
             fixedIncomeIncreaseFields.style.display = 'none';
@@ -11,6 +10,32 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             fixedIncomeIncreaseFields.style.display = 'block';
             percentageIncreaseGroup.style.display = 'none';
+        }
+    });
+
+    const adhocAnnualYesElement = document.getElementById('adhoc-annual-yes');
+    const adhocMonthElement = document.getElementById('adhoc-month');
+
+    // Listen for input changes on the ad-hoc month field
+    adhocMonthElement.addEventListener('input', function() {
+        if (document.getElementById('adhoc-annual-yes').checked && this.value > 12) {
+            alert('Vui lòng nhập một số không lớn hơn 12 cho tháng nếu chi phí được áp dụng hàng năm.');
+            this.value = ''; // Clear the input
+        }
+    });
+
+    document.getElementById('calculate').addEventListener('click', function() {
+        // Ensure ad-hoc month is valid when annual is selected
+        if (document.getElementById('adhoc-annual-yes').checked && adhocMonthElement.value > 12) {
+            alert('Vui lòng nhập một số không lớn hơn 12 cho tháng nếu chi phí được áp dụng hàng năm.');
+            return; // Stop further execution
+        }
+    });
+      
+    // Ensure the month cannot be more than 12 if "Yes" is selected for annual expense
+    adhocAnnualYesElement.addEventListener('change', function() {
+        if (this.checked) {
+            adhocMonthElement.max = 12;
         }
     });
 
@@ -25,6 +50,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const inflationRate = 0.062;
         const incomeIncreaseType = document.getElementById('income-increase-type').value;
         const annualPercentageIncrease = parseFloat(document.getElementById('annual-percentage-increase').value) / 100 || 0;
+
+        const adhocExpense = formatToNumber(document.getElementById('adhoc-expense').value);
+        let adhocMonth = parseInt(adhocMonthElement.value);
+        const adhocAnnual = document.getElementById('adhoc-annual-yes').checked;
+
         let retirementGoal = (monthlyExpenditures * 12) / 0.04;
         let totalSavings = initialBalance;
         let data = [totalSavings];
@@ -35,45 +65,50 @@ document.addEventListener('DOMContentLoaded', function() {
             months++;
             let currentYear = Math.floor(months / 12);
             
-            // Handle income increase based on the selected method
             if (incomeIncreaseType === 'fixed' && currentYear >= incomeIncreaseYear) {
                 monthlyIncome = newMonthlyIncome;
             } else if (incomeIncreaseType === 'percentage' && months % 12 === 0) {
                 monthlyIncome *= (1 + annualPercentageIncrease);
             }
-            
-            // Adjust monthly expenditures for inflation annually
+
             if (months % 12 === 0) {
                 monthlyExpenditures *= (1 + inflationRate);
-                retirementGoal = ((monthlyExpenditures * 12) / 0.04); // Update retirement goal based on new expenditures
+                retirementGoal = ((monthlyExpenditures * 12) / 0.04);
             }
 
             let monthlySavings = monthlyIncome - monthlyExpenditures;
             let investmentSavings = monthlySavings * savingsRate;
             let depositSavings = monthlySavings * (1 - savingsRate);
-            
             let monthlyInvestmentReturn = (totalSavings * savingsRate) * (0.143 / 12);
             let monthlyDepositReturn = (totalSavings * (1 - savingsRate)) * (0.072 / 12);
-            
             totalSavings += investmentSavings + monthlyInvestmentReturn + depositSavings + monthlyDepositReturn;
+
+            // Handle ad-hoc expenses
+            if (adhocExpense > 0 && adhocMonth) {
+                if (adhocAnnual && months % 12 === adhocMonth - 1) {
+                    totalSavings -= adhocExpense;
+                } else if (!adhocAnnual && months === adhocMonth) {
+                    totalSavings -= adhocExpense;
+                }
+            }
+
             data.push(totalSavings);
-            
             retirementReached = totalSavings >= retirementGoal;
         }
 
         const yearsToRetirement = Math.floor(months / 12);
         const remainingMonths = months % 12;
         document.getElementById('result').innerHTML = `
-            <p>Bạn có thể đạt mục tiêu hưu trí sau: ${yearsToRetirement} năm và ${remainingMonths} tháng.</p>
-            <p>Tổng tiết kiệm dự kiến là: ${totalSavings.toLocaleString('en')} VND.</p>
-        `;
+        <p>Bạn có thể đạt mục tiêu hưu trí sau: ${yearsToRetirement} năm và ${remainingMonths} tháng.</p>
+        <p>Tổng tiết kiệm dự kiến là: ${totalSavings.toLocaleString('en')} VND.</p>
+    `;
 
         updateChart(data);
     });
 
     function updateChart(data) {
         const ctx = document.getElementById('savingsChart').getContext('2d');
-        const labels = Array.from({ length: data.length }, (_, i) => `Tháng ${i}`);
+        const labels = Array.from({ length: data.length }, (_, i) => `Month ${i}`);
         if (window.savingsChart && typeof window.savingsChart.destroy === 'function') {
             window.savingsChart.destroy();
         }
@@ -83,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Tổng số tiền để dành theo tháng',
+                    label: 'Total Savings Over Time',
                     data: data,
                     borderColor: 'rgb(75, 192, 192)',
                     tension: 0.1
@@ -95,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         beginAtZero: true,
                         title: {
                             display: true,
-                            text: 'Tổng số tiền để dành (VND)'
+                            text: 'Total Savings (VND)'
                         },
                         ticks: {
                             callback: function(value) {
