@@ -12,7 +12,7 @@
         <h1>Công cụ lập kế hoạch hưu trí</h1>
         <form id="calculator-form">
             <div class="form-group">
-                <label for="monthly-expenditures">Chi tiêu hàng tháng (VND):</label>
+                <label for="monthly-expenditures">Chi tiêu hàng tháng hiện tại (VND):</label>
                 <input type="text" id="monthly-expenditures" required placeholder="Nhập số tiền...">
             </div>
             <div class="form-group">
@@ -26,6 +26,24 @@
             <div class="form-group">
                 <label for="initial-balance">Số dư ban đầu (VND):</label>
                 <input type="text" id="initial-balance" required placeholder="Nhập số tiền...">
+            </div>
+            <!-- Checkbox to enable retirement expenditures input -->
+            <div class="form-group">
+                <!-- Wrap the checkbox inside a label element -->
+                <label for="toggle-retirement-expenditures">Bạn có muốn nhập chi tiêu hàng tháng khi nghỉ hưu không?</label>
+                <label class="custom-checkbox">
+                    <input type="checkbox" id="toggle-retirement-expenditures" name="toggle-retirement-expenditures">
+                    <span class="slider"></span>
+                </label>
+
+            </div>
+
+            <!-- Container for retirement expenditures input, hidden by default -->
+            <div id="retirement-expenditures-group" style="display: none;">
+                <div class="form-group">
+                    <label for="retirement-expenditures">Chi tiêu hàng tháng khi nghỉ hưu (VND):</label>
+                    <input type="text" id="retirement-expenditures" placeholder="Nhập số tiền...">
+                </div>
             </div>
             <div class="form-group">
                 <label for="income-increase-type">Tăng thu nhập hàng tháng bằng:</label>
@@ -48,41 +66,58 @@
                 <label for="annual-percentage-increase">Tăng trưởng hàng năm (%):</label>
                 <input type="number" id="annual-percentage-increase" placeholder="Nhập tỷ lệ...">
             </div>
-            <!-- Ad-hoc Expense Input -->
             <div class="form-group">
-                <label for="adhoc-expense">Chi phí không thường xuyên (VND):</label>
-                <input type="text" id="adhoc-expense" placeholder="Nhập số tiền...">
-            <div class="form-group">
-                <label>Áp dụng chi phí không thường xuyên hàng năm:</label>
-                <div>
-                    <input type="radio" id="adhoc-annual-yes" name="adhoc-annual" value="yes">
-                    <label for="adhoc-annual-yes">Có</label>
-                    <input type="radio" id="adhoc-annual-no" name="adhoc-annual" value="no" checked>
-                    <label for="adhoc-annual-no">Không</label>
+                <label for="adhoc-expense-toggle">Bạn có muốn thêm chi phí không thường xuyên không?</label>
+                <label class="switch">
+                    <input type="checkbox" id="adhoc-expense-toggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+
+            <!-- Container for Ad-hoc Expenses, hidden by default -->
+            <div id="adhoc-expenses-container" style="display: none;">
+                <div class="form-group">
+                    <label for="adhoc-expense">Chi phí không thường xuyên (VND):</label>
+                    <input type="text" id="adhoc-expense" placeholder="Nhập số tiền...">
                 </div>
                 <div class="form-group">
-                    <label for="adhoc-month">Tháng chi phí không thường xuyên phát sinh: (ví dụ: nếu phát sinh tháng thứ 1 của năm thứ 2 thì điền vào 25) </label>
-                    <input type="number" id="adhoc-month" placeholder="Nhập tháng..." min="1" max="12">
+                    <label>Áp dụng chi phí không thường xuyên hàng năm:</label>
+                    <div class="toggle-radio">
+                        <input type="radio" id="adhoc-annual-yes" name="adhoc-annual" value="yes">
+                        <label for="adhoc-annual-yes" class="toggle-radio-button">Có</label>
+                        <input type="radio" id="adhoc-annual-no" name="adhoc-annual" value="no" checked>
+                        <label for="adhoc-annual-no" class="toggle-radio-button">Không</label>
+                    </div>
                 </div>
-                
-            <button type="button" id="calculate">Tính toán mục tiêu hưu trí</button>
+                <div class="form-group">
+                    <label for="adhoc-month">Tháng chi phí không thường xuyên phát sinh:</label>
+                    <input type="number" id="adhoc-month" placeholder="Nhập tháng..." min="1" max="12">
+                    <div id="adhoc-month-warning" style="display: none; color: red; margin-top: 5px;"></div>
+                </div>
+            </div>
+
+            <!-- Calculate Retirement Goal Button, always visible -->
+            <button type="button" id="calculate">TÍNH TOÁN MỤC TIÊU HƯU TRÍ</button>
         </form>
-        <div id="result"></div>
-        <div class="chart-container">
-            <canvas id="savingsChart"></canvas>
+            <div id="result"></div>
+            <div class="chart-container">
+                <canvas id="savingsChart"></canvas>
+            </div>
+            <div id="adhoc-expense-warning" style="display: none;">
+                <p>Chi phí phát sinh đột xuất của bạn được dự kiến sau khi bạn đạt được mục tiêu hưu trí. Nếu bạn muốn tính toán chi phí này, vui lòng giảm số tháng mà chi phí phát sinh.</p>
+            </div>
+            <div class="footnote">
+                <p><strong>Những giả định của phép tính:</strong></p>
+                <ul>
+                    <li>Tỷ lệ tăng trưởng hàng năm cho tài khoản tiết kiệm là 7.2%</li>
+                    <li>Tỷ lệ tăng trưởng hàng năm cho tài khoản đầu tư là 14.3%</li>
+                    <li>Lạm phát hàng năm dự kiến là 6.2%</li>
+                    <li>Số dư ban đầu và tiết kiệm hàng tháng sẽ đóng góp vào mục tiêu hưu trí, được tính toán dựa trên lãi suất kép.</li>
+                </ul>
+            </div>
         </div>
-        <div class="footnote">
-            <p><strong>Những giả định của phép tính:</strong></p>
-            <ul>
-                <li>Tỷ lệ tăng trưởng hàng năm cho tài khoản tiết kiệm là 7.2%</li>
-                <li>Tỷ lệ tăng trưởng hàng năm cho tài khoản đầu tư là 14.3%</li>
-                <li>Lạm phát hàng năm dự kiến là 6.2%</li>
-                <li>Số dư ban đầu và tiết kiệm hàng tháng sẽ đóng góp vào mục tiêu hưu trí, được tính toán dựa trên lãi suất kép.</li>
-            </ul>
-        </div>
-    </div>
-    <script src="script.js"></script>
-    <script>
+        <script src="script.js"></script>
+        <script>
         // Ensure to place any additional inline JavaScript here
         // For example, initializing the form or other elements if needed
     </script>
